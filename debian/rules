@@ -1,0 +1,18 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+include /usr/share/dpkg/architecture.mk
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+testsuite_failing_archs := alpha hurd-i386 mips64el powerpc riscv64 x32
+ifneq (,$(filter $(DEB_HOST_ARCH),$(testsuite_failing_archs)))
+  fail_param := || true
+endif
+
+%:
+	dh $@ --with kf5 --buildsystem kf5 --without build_stamp
+
+override_dh_auto_test:
+	xvfb-run -a --server-args="-screen 0 1024x768x24 +extension GLX" --\
+	           dh_auto_test --no-parallel $(fail_param)

@@ -1,0 +1,18 @@
+description: A QtQuick module providing high-performance charts.
+fancyname: KQuickCharts
+maintainer: ahiemstra
+group: frameworks
+subgroup: tier 1
+release: true
+type: functional
+platforms:
+- name: Linux
+- name: FreeBSD
+public_lib: true
+public_source_dirs:
+- controls
+- src
+libraries:
+ - cmake: KF5::QuickCharts
+cmakename: KF5QuickCharts
+irc: kde-devel
