@@ -2,11 +2,12 @@ Source: kquickcharts
 Section: libs
 Priority: optional
 Maintainer: Debian Qt/KDE Maintainers <debian-qt-kde@lists.debian.org>
-Uploaders: Sandro Knauß <hefee@debian.org>,
+Uploaders: Aurélien COUDERC <coucouf@debian.org>,
            Norbert Preining <norbert@preining.info>,
+           Sandro Knauß <hefee@debian.org>,
 Build-Depends: cmake (>= 3.16~),
                debhelper-compat (= 13),
-               extra-cmake-modules (>= 5.86.0~),
+               extra-cmake-modules (>= 5.90.0~),
                kirigami2-dev,
                libkf5declarative-dev,
                pkg-kde-tools,
