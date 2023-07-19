@@ -7,6 +7,8 @@
 
 #include "ModelSource.h"
 
+#include <QMetaProperty>
+
 #include "charts_datasource_logging.h"
 
 ModelSource::ModelSource(QObject *parent)
@@ -100,6 +102,10 @@ QVariant ModelSource::minimum() const
         return {};
     }
 
+    if (m_minimum.isValid()) {
+        return m_minimum;
+    }
+
     auto minProperty = m_model->property("minimum");
     auto maxProperty = m_model->property("maximum");
     if (minProperty.isValid() && minProperty != maxProperty) {
@@ -108,7 +114,7 @@ QVariant ModelSource::minimum() const
 
     QVariant result = std::numeric_limits<float>::max();
     for (int i = 0; i < itemCount(); ++i) {
-        result = qMin(result, item(i));
+        result = std::min(result, item(i), variantCompare);
     }
     return result;
 }
@@ -119,6 +125,10 @@ QVariant ModelSource::maximum() const
         return {};
     }
 
+    if (m_maximum.isValid()) {
+        return m_maximum;
+    }
+
     auto minProperty = m_model->property("minimum");
     auto maxProperty = m_model->property("maximum");
     if (maxProperty.isValid() && maxProperty != minProperty) {
@@ -127,7 +137,7 @@ QVariant ModelSource::maximum() const
 
     QVariant result = std::numeric_limits<float>::min();
     for (int i = 0; i < itemCount(); ++i) {
-        result = qMax(result, item(i));
+        result = std::max(result, item(i), variantCompare);
     }
     return result;
 }
@@ -188,6 +198,8 @@ void ModelSource::setModel(QAbstractItemModel *model)
 
     if (m_model) {
         m_model->disconnect(this);
+        m_minimum = QVariant{};
+        m_maximum = QVariant{};
     }
 
     m_model = model;
@@ -198,7 +210,49 @@ void ModelSource::setModel(QAbstractItemModel *model)
         connect(m_model, &QAbstractItemModel::modelReset, this, &ModelSource::dataChanged);
         connect(m_model, &QAbstractItemModel::dataChanged, this, &ModelSource::dataChanged);
         connect(m_model, &QAbstractItemModel::layoutChanged, this, &ModelSource::dataChanged);
+
+        connect(m_model, &QAbstractItemModel::destroyed, this, [this]() {
+            m_minimum = QVariant{};
+            m_maximum = QVariant{};
+            m_model = nullptr;
+        });
+
+        auto minimumIndex = m_model->metaObject()->indexOfProperty("minimum");
+        if (minimumIndex != -1) {
+            auto minimum = m_model->metaObject()->property(minimumIndex);
+            if (minimum.hasNotifySignal()) {
+                auto slot = metaObject()->method(metaObject()->indexOfSlot("onMinimumChanged()"));
+                connect(m_model, minimum.notifySignal(), this, slot);
+                m_minimum = minimum.read(m_model);
+            }
+        }
+
+        auto maximumIndex = m_model->metaObject()->indexOfProperty("maximum");
+        if (maximumIndex != -1) {
+            auto maximum = m_model->metaObject()->property(maximumIndex);
+            if (maximum.hasNotifySignal()) {
+                auto slot = metaObject()->method(metaObject()->indexOfSlot("onMaximumChanged()"));
+                connect(m_model, maximum.notifySignal(), this, slot);
+                m_maximum = maximum.read(m_model);
+            }
+        }
     }
 
     Q_EMIT modelChanged();
+}
+
+void ModelSource::onMinimumChanged()
+{
+    auto newMinimum = m_model->property("minimum");
+    if (newMinimum.isValid() && newMinimum != m_minimum) {
+        m_minimum = newMinimum;
+    }
+}
+
+void ModelSource::onMaximumChanged()
+{
+    auto newMaximum = m_model->property("maximum");
+    if (newMaximum.isValid() && newMaximum != m_maximum) {
+        m_maximum = newMaximum;
+    }
 }

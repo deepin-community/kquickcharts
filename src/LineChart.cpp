@@ -184,7 +184,7 @@ void LineChart::setPointDelegate(QQmlComponent *newPointDelegate)
     }
 
     m_pointDelegate = newPointDelegate;
-    for (auto entry : qAsConst(m_pointDelegates)) {
+    for (auto entry : std::as_const(m_pointDelegates)) {
         qDeleteAll(entry);
     }
     m_pointDelegates.clear();
@@ -305,10 +305,17 @@ void LineChart::onDataChanged()
     polish();
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 void LineChart::geometryChanged(const QRectF &newGeometry, const QRectF &oldGeometry)
+#else
+void LineChart::geometryChange(const QRectF &newGeometry, const QRectF &oldGeometry)
+#endif
 {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     XYChart::geometryChanged(newGeometry, oldGeometry);
-
+#else
+    XYChart::geometryChange(newGeometry, oldGeometry);
+#endif
     if (newGeometry != oldGeometry) {
         polish();
     }

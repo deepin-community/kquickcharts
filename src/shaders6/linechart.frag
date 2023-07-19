@@ -6,31 +6,28 @@
  * SPDX-License-Identifier: LGPL-2.1-only OR LGPL-3.0-only OR LicenseRef-KDE-Accepted-LGPL
  */
 
-// This requires "sdf.frag" which is included through SDFShader.
+#version 440
 
-uniform lowp float opacity; // inherited opacity of this item
-uniform lowp float lineWidth;
-uniform lowp float smoothing;
+#extension GL_GOOGLE_include_directive: enable
+#include "sdf.glsl"
+
+layout(std140, binding = 0) uniform buf {
+    highp mat4 matrix;
+    lowp float lineWidth; // offset 64
+    lowp float aspect; // offset 68
+    lowp float opacity; // inherited opacity of this item - offset 72
+    lowp float smoothing; // offset 76
+} ubuf; // size 80
 
 #define MAXIMUM_POINT_COUNT 18
 
-#ifdef LEGACY_STAGE_INOUT
-varying mediump vec2 uv;
-varying mediump vec4 pointTuples[MAXIMUM_POINT_COUNT / 2];
-varying highp float pointCount;
-varying mediump vec2 bounds;
-varying mediump vec4 lineColor;
-varying mediump vec4 fillColor;
-#define out_color gl_FragColor
-#else
-in mediump vec2 uv;
-in mediump vec4 pointTuples[MAXIMUM_POINT_COUNT / 2];
-in highp float pointCount;
-in mediump vec2 bounds;
-in mediump vec4 lineColor;
-in mediump vec4 fillColor;
-out lowp vec4 out_color;
-#endif
+layout (location = 0) in mediump vec2 uv;
+layout (location = 1) in mediump vec4 pointTuples[MAXIMUM_POINT_COUNT / 2];
+layout (location = 19) in highp float pointCount;
+layout (location = 20) in mediump vec2 bounds;
+layout (location = 21) in mediump vec4 lineColor;
+layout (location = 22) in mediump vec4 fillColor;
+layout (location = 0) out lowp vec4 out_color;
 
 // ES2 does not support array function arguments. So instead we need to
 // reference the uniform array directly. So this copies the implementation of
@@ -80,7 +77,7 @@ void main()
 
     lowp vec4 color = vec4(0.0, 0.0, 0.0, 0.0);
 
-    lowp float bounds_range = max(0.01, lineWidth);
+    lowp float bounds_range = max(0.01, ubuf.lineWidth);
 
     // bounds.y contains the line segment's maximum value. If we are a bit above
     // that, we will never render anything, so just discard the pixel.
@@ -92,7 +89,7 @@ void main()
     // that, we know we will always be inside the polygon described by points.
     // So just return a pixel with fillColor.
     if (point.y < bounds.x - bounds_range) {
-        out_color = fillColor * opacity;
+        out_color = fillColor * ubuf.opacity;
         return;
     }
 
@@ -100,9 +97,9 @@ void main()
 
     color = sdf_render(polygon, color, fillColor);
 
-    if (lineWidth > 0.0) {
-        color = mix(color, lineColor, 1.0 - smoothstep(-smoothing, smoothing, sdf_annular(polygon, lineWidth)));
+    if (ubuf.lineWidth > 0.0) {
+        color = mix(color, lineColor, 1.0 - smoothstep(-ubuf.smoothing, ubuf.smoothing, sdf_annular(polygon, ubuf.lineWidth)));
     }
 
-    out_color = color * opacity;
+    out_color = color * ubuf.opacity;
 }

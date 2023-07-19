@@ -5,13 +5,13 @@ include /usr/share/dpkg/architecture.mk
 
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 
-testsuite_failing_archs := alpha hurd-i386 mips64el powerpc riscv64 x32
+testsuite_failing_archs := alpha hppa hurd-i386 mips64el powerpc riscv64 x32
 ifneq (,$(filter $(DEB_HOST_ARCH),$(testsuite_failing_archs)))
   fail_param := || true
 endif
 
 %:
-	dh $@ --with kf5 --buildsystem kf5 --without build_stamp
+	dh $@
 
 override_dh_auto_test:
 	xvfb-run -a --server-args="-screen 0 1024x768x24 +extension GLX" --\

@@ -41,10 +41,10 @@ struct BarVertex {
 
 /* clang-format off */
 QSGGeometry::Attribute BarAttributes[] = {
-    QSGGeometry::Attribute::create(0, 2, GL_FLOAT, true),
-    QSGGeometry::Attribute::create(1, 2, GL_FLOAT, false),
-    QSGGeometry::Attribute::create(2, 4, GL_FLOAT, false),
-    QSGGeometry::Attribute::create(3, 1, GL_FLOAT, false)
+    QSGGeometry::Attribute::create(0, 2, QSGGeometry::FloatType, true),
+    QSGGeometry::Attribute::create(1, 2, QSGGeometry::FloatType, false),
+    QSGGeometry::Attribute::create(2, 4, QSGGeometry::FloatType, false),
+    QSGGeometry::Attribute::create(3, 1, QSGGeometry::FloatType, false)
 };
 /* clang-format on */
 
@@ -93,11 +93,6 @@ public:
     QColor color;
     float value;
 };
-
-bool compareCount(const QVector<QPair<qreal, QColor>> &first, const QVector<QPair<qreal, QColor>> &second)
-{
-    return first.count() < second.count();
-}
 
 BarChartNode::BarChartNode()
 {

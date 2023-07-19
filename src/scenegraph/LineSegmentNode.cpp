@@ -74,25 +74,25 @@ struct LineVertex {
 
 /* clang-format off */
 QSGGeometry::Attribute LineAttributes[] = {
-    QSGGeometry::Attribute::create(0, 2, GL_FLOAT, true), // in_position
-    QSGGeometry::Attribute::create(1, 2, GL_FLOAT, false), // in_uv
+    QSGGeometry::Attribute::create(0, 2, QSGGeometry::FloatType, true), // in_position
+    QSGGeometry::Attribute::create(1, 2, QSGGeometry::FloatType, false), // in_uv
 
-    QSGGeometry::Attribute::create(2, 4, GL_FLOAT, false), // in_lineColor
-    QSGGeometry::Attribute::create(3, 4, GL_FLOAT, false), // in_fillColor
+    QSGGeometry::Attribute::create(2, 4, QSGGeometry::FloatType, false), // in_lineColor
+    QSGGeometry::Attribute::create(3, 4, QSGGeometry::FloatType, false), // in_fillColor
 
-    QSGGeometry::Attribute::create(4, 2, GL_FLOAT, false), // in_bounds
+    QSGGeometry::Attribute::create(4, 2, QSGGeometry::FloatType, false), // in_bounds
 
-    QSGGeometry::Attribute::create(5, 1, GL_FLOAT, false), // in_count
+    QSGGeometry::Attribute::create(5, 1, QSGGeometry::FloatType, false), // in_count
 
-    QSGGeometry::Attribute::create(6, 4, GL_FLOAT, false), // in_points_0
-    QSGGeometry::Attribute::create(7, 4, GL_FLOAT, false), // in_points_1
-    QSGGeometry::Attribute::create(8, 4, GL_FLOAT, false), // in_points_2
-    QSGGeometry::Attribute::create(9, 4, GL_FLOAT, false), // in_points_3
-    QSGGeometry::Attribute::create(10, 4, GL_FLOAT, false), // in_points_4
-    QSGGeometry::Attribute::create(11, 4, GL_FLOAT, false), // in_points_5
-    QSGGeometry::Attribute::create(12, 4, GL_FLOAT, false), // in_points_6
-    QSGGeometry::Attribute::create(13, 4, GL_FLOAT, false), // in_points_7
-    QSGGeometry::Attribute::create(14, 4, GL_FLOAT, false), // in_points_8
+    QSGGeometry::Attribute::create(6, 4, QSGGeometry::FloatType, false), // in_points_0
+    QSGGeometry::Attribute::create(7, 4, QSGGeometry::FloatType, false), // in_points_1
+    QSGGeometry::Attribute::create(8, 4, QSGGeometry::FloatType, false), // in_points_2
+    QSGGeometry::Attribute::create(9, 4, QSGGeometry::FloatType, false), // in_points_3
+    QSGGeometry::Attribute::create(10, 4, QSGGeometry::FloatType, false), // in_points_4
+    QSGGeometry::Attribute::create(11, 4, QSGGeometry::FloatType, false), // in_points_5
+    QSGGeometry::Attribute::create(12, 4, QSGGeometry::FloatType, false), // in_points_6
+    QSGGeometry::Attribute::create(13, 4, QSGGeometry::FloatType, false), // in_points_7
+    QSGGeometry::Attribute::create(14, 4, QSGGeometry::FloatType, false), // in_points_8
 };
 /* clang-format on */
 
@@ -229,7 +229,7 @@ void LineSegmentNode::update()
         points << QVector2D(-0.5, m_values[0].y() * m_yAspect);
     }
 
-    for (auto value : qAsConst(m_values)) {
+    for (auto value : std::as_const(m_values)) {
         auto x = ((value.x() - m_rect.left()) / m_rect.width()) * m_xAspect;
         points << QVector2D(x, value.y() * m_yAspect);
         min = std::min(value.y() * m_yAspect, min);
