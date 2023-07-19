@@ -3,22 +3,20 @@ Section: libs
 Priority: optional
 Maintainer: Debian Qt/KDE Maintainers <debian-qt-kde@lists.debian.org>
 Uploaders: Aurélien COUDERC <coucouf@debian.org>,
-           Norbert Preining <norbert@preining.info>,
            Sandro Knauß <hefee@debian.org>,
 Build-Depends: cmake (>= 3.16~),
                debhelper-compat (= 13),
-               extra-cmake-modules (>= 5.90.0~),
+               dh-sequence-kf5,
+               extra-cmake-modules (>= 5.103.0~),
                kirigami2-dev,
                libkf5declarative-dev,
-               pkg-kde-tools,
-               qml-module-qttest,
-               qt5-qmake,
+               qml-module-qttest <!nocheck>,
                qtbase5-dev,
                qtdeclarative5-dev (>= 5.15.2~),
                qtquickcontrols2-5-dev (>= 5.15.2~),
-               xauth,
-               xvfb,
-Standards-Version: 4.6.0
+               xauth <!nocheck>,
+               xvfb <!nocheck>,
+Standards-Version: 4.6.2
 Homepage: https://invent.kde.org/frameworks/kquickcharts
 Vcs-Browser: https://salsa.debian.org/qt-kde-team/kde/kquickcharts
 Vcs-Git: https://salsa.debian.org/qt-kde-team/kde/kquickcharts.git
@@ -30,7 +28,6 @@ Depends: qml-module-org-kde-quickcharts (= ${binary:Version}),
          qtbase5-dev,
          qtdeclarative5-dev (>= 5.15.2~),
          ${misc:Depends},
-         ${shlibs:Depends},
 Description: Quick Charts - development files
  A QtQuick plugin providing high-performance charts (gpu-accelerated).
  .

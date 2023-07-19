@@ -21,7 +21,11 @@ public:
     ~LineChartMaterial();
 
     QSGMaterialType *type() const override;
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QSGMaterialShader *createShader() const override;
+#else
+    QSGMaterialShader *createShader(QSGRendererInterface::RenderMode) const override;
+#endif
     int compare(const QSGMaterial *other) const override;
 
     float aspect = 1.0;
@@ -35,6 +39,7 @@ public:
     LineChartShader();
     ~LineChartShader();
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     char const *const *attributeNames() const override;
 
     void initialize() override;
@@ -46,6 +51,9 @@ private:
     int m_lineWidthLocation = 0;
     int m_aspectLocation = 0;
     int m_smoothingLocation = 0;
+#else
+    bool updateUniformData(QSGMaterialShader::RenderState &state, QSGMaterial *newMaterial, QSGMaterial *oldMaterial) override;
+#endif
 };
 
 #endif // LINECHARTMATERIAL_H

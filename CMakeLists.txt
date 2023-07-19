@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.16)
 
-set(KF_VERSION "5.90.0") # handled by release scripts
-set(KF_DEP_VERSION "5.90.0") # handled by release scripts
+set(KF_VERSION "5.103.0") # handled by release scripts
+set(KF_DEP_VERSION "5.103.0") # handled by release scripts
 
 project(KQuickCharts VERSION ${KF_VERSION})
 
 include(FeatureSummary)
-find_package(ECM 5.90.0 NO_MODULE)
+find_package(ECM 5.103.0 NO_MODULE)
 set_package_properties(ECM PROPERTIES TYPE REQUIRED DESCRIPTION "Extra CMake Modules." URL "https://commits.kde.org/extra-cmake-modules")
 feature_summary(WHAT REQUIRED_PACKAGES_NOT_FOUND FATAL_ON_MISSING_REQUIRED_PACKAGES)
 
@@ -22,11 +22,15 @@ include(ECMGenerateExportHeader)
 include(ECMAddTests)
 include(ECMSetupVersion)
 include(ECMQtDeclareLoggingCategory)
+include(ECMQmlModule)
 
 option(BUILD_EXAMPLES "Build example applications" OFF)
 
 set(REQUIRED_QT_VERSION 5.15.2)
-find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED Qml Quick QuickControls2)
+find_package(Qt${QT_MAJOR_VERSION} ${REQUIRED_QT_VERSION} CONFIG REQUIRED Qml Quick QuickControls2)
+if (QT_MAJOR_VERSION EQUAL "6")
+    find_package(Qt6 ${REQUIRED_QT_VERSION} CONFIG REQUIRED ShaderTools)
+endif()
 
 set(EXCLUDE_DEPRECATED_BEFORE_AND_AT 0 CACHE STRING "Control the range of deprecated API excluded from the build [default=0].")
 
@@ -60,12 +64,6 @@ install(FILES
     "${CMAKE_CURRENT_BINARY_DIR}/KF5QuickChartsConfigVersion.cmake"
     DESTINATION ${KDE_INSTALL_CMAKEPACKAGEDIR}/KF5QuickCharts
     COMPONENT Devel
-)
-
-install(EXPORT KF5QuickChartsTargets
-    DESTINATION ${KDE_INSTALL_CMAKEPACKAGEDIR}/KF5QuickCharts
-    FILE KF5QuickChartsTargets.cmake
-    NAMESPACE KF5::
 )
 
 feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
